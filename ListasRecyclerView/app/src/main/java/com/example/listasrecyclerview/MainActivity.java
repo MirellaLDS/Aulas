@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ArrayList androidVersion = new ArrayList();
+        ArrayList<String> androidVersion = new ArrayList();
         androidVersion.add("Android 4 Ice Cream Sandwich");
         androidVersion.add("Android 4.1 Jelly Bean");
         androidVersion.add("Android 4.4 KitKat");
@@ -33,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
         AndroidVersionAdapter adapter = new AndroidVersionAdapter(androidVersion, colors);
 
 
-        RecyclerView.LayoutManager layoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         RecyclerView rv = findViewById(R.id.rvListaDeVersoes);
         rv.setLayoutManager(layoutManager);
         rv.setAdapter(adapter);
