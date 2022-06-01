@@ -31,7 +31,6 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Id do curso"
-        android:inputType="textPersonName"
         app:layout_constraintEnd_toStartOf="@+id/btEditar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etNomeCurso" />
@@ -43,4 +42,25 @@
         android:text="Editar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btCadastrar" />
+
+
+    <Button
+        android:id="@+id/btDeletar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apagar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btEditar" />
+
+    <TextView
+        android:id="@+id/tvCursoCadastrada"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Curso cadastrado"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etIdCurso" />
 </androidx.constraintlayout.widget.ConstraintLayout>

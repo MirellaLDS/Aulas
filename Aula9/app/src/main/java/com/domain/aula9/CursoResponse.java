@@ -31,4 +31,12 @@ public class CursoResponse {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "CursoResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

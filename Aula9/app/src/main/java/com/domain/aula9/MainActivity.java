@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import retrofit2.Call;
@@ -17,9 +18,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText etIdCurso;
     private Button btCadastrar;
     private Button btEditar;
+    private TextView tvDescricaoCurso;
 
     private CursoService service;
-    private CursoResponse cursoResponse;
+    private CursoResponse cursoAtualizado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         etIdCurso = findViewById(R.id.etIdCurso);
         btCadastrar = findViewById(R.id.btCadastrar);
         btEditar = findViewById(R.id.btEditar);
+        tvDescricaoCurso = findViewById(R.id.tvCursoCadastrada);
 
         service = new RetrofitConfig()
                 .criarService();
@@ -37,13 +40,52 @@ public class MainActivity extends AppCompatActivity {
         CursoPost sendCursoBody = new CursoPost();
 
         btCadastrar.setOnClickListener(view -> {
-            sendCursoBody.setName(etNomeCurso.getText().toString());
+            String texto = etNomeCurso.getText().toString();
+            sendCursoBody.setName(texto);
             executarRequestPost(sendCursoBody);
         });
 
+        Button deletar = findViewById(R.id.btDeletar);
+        deletar.setOnClickListener(view -> {
+
+            service.delete(2325).enqueue(new Callback<Object>() {
+                @Override
+                public void onResponse(Call<Object> call, Response<Object> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Erro de comunicação " + response.code(), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Object> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Falha na request", Toast.LENGTH_LONG).show();
+                }
+            });
+
+        });
+
+
         btEditar.setOnClickListener(view -> {
-            sendCursoBody.setName(etNomeCurso.getText().toString());
-            executarRequestPut(sendCursoBody, cursoResponse.getId());
+            String novoNomeDoCurso = etNomeCurso.getText().toString();
+            String idDigitadoPeloUsuario = etIdCurso.getText().toString();
+            int id = Integer.parseInt(idDigitadoPeloUsuario);
+
+            CursoPost cursoPut = new CursoPost();
+            cursoPut.setName(novoNomeDoCurso);
+
+            service.createRequestPut(cursoPut, id).enqueue(new Callback<CursoResponse>() {
+                @Override
+                public void onResponse(Call<CursoResponse> call, Response<CursoResponse> response) {
+                    Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(Call<CursoResponse> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Falha na request", Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
     }
@@ -52,8 +94,13 @@ public class MainActivity extends AppCompatActivity {
         service.createRequestPost(cursoPost).enqueue(new Callback<CursoResponse>() {
             @Override
             public void onResponse(Call<CursoResponse> call, Response<CursoResponse> response) {
-                cursoResponse = response.body();
+                cursoAtualizado = response.body();
+
+                String id = Integer.toString(cursoAtualizado.getId());
+                etIdCurso.setText(id);
                 Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+
+                tvDescricaoCurso.setText("O curso que foi cadastrado: \n " + cursoAtualizado.toString());
             }
 
             @Override
