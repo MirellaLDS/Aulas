@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/Fafire/Nova pasta/Aulas/ListaSimples/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Projects/Fafire/Nova pasta/Aulas/ListaSimples/app/src/main/res/layout/version_item_layout.xml" value="0.33" />
         <entry key="..\:/Projects/ListaSimples/app/src/main/res/layout/version_item_layout.xml" value="0.17222222222222222" />
+        <entry key="..\:/Users/MirellaLins-PC/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/simple_list_item_1.xml" value="0.2630208333333333" />
       </map>
     </option>
   </component>
