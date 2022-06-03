@@ -3,10 +3,16 @@ package com.domain.aula9;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,103 +24,116 @@ public class MainActivity extends AppCompatActivity {
     private EditText etIdCurso;
     private Button btCadastrar;
     private Button btEditar;
-    private Button btDeletar;
-    private TextView tvDescricaoCurso;
+    private ListView lvListaCurso;
 
-    private CursoService service;
-    private CursoResponse cursoAtualizado;
+    private CursoService requestCurso;
+    private CursoResponse cursoResponse;
+    private List<String> listaNomeCursos;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        listaNomeCursos = new ArrayList<>();
+
         etNomeCurso = findViewById(R.id.etNomeCurso);
         etIdCurso = findViewById(R.id.etIdCurso);
         btCadastrar = findViewById(R.id.btCadastrar);
         btEditar = findViewById(R.id.btEditar);
-        btDeletar = findViewById(R.id.btDeletar);
-        tvDescricaoCurso = findViewById(R.id.tvCursoCadastrada);
+        lvListaCurso = findViewById(R.id.lvListaCursos);
 
-        executarRequestPost();
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listaNomeCursos);
+        lvListaCurso.setAdapter(adapter);
 
-        executarRequestPut();
-
-        executarRequestDelete();
-
-        service = new RetrofitConfig()
+        requestCurso = new RetrofitConfig()
                 .criarService();
 
-    }
+        CursoPost sendCursoBody = new CursoPost();
 
-    private void executarRequestDelete() {
-        btDeletar.setOnClickListener(view -> {
-            String idCursoDigitado = etIdCurso.getText().toString();
-            int id = Integer.parseInt(idCursoDigitado);
-
-            service.delete(id).enqueue(new Callback<Object>() {
-                @Override
-                public void onResponse(Call<Object> call, Response<Object> response) {
-                    Toast.makeText(getApplicationContext(), "O registro foi apagado", Toast.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void onFailure(Call<Object> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na requisição", Toast.LENGTH_LONG).show();
-                }
-            });
-        });
-    }
-
-    private void executarRequestPost() {
         btCadastrar.setOnClickListener(view -> {
-            String texto = etNomeCurso.getText().toString();
+            sendCursoBody.setName(etNomeCurso.getText().toString());
+            executarRequestPost(sendCursoBody);
+        });
 
-            CursoPost sendCursoBody = new CursoPost();
-            sendCursoBody.setName(texto);
+        btEditar.setOnClickListener(view -> {
+            sendCursoBody.setName(etNomeCurso.getText().toString());
+            executarRequestPut(sendCursoBody, cursoResponse.getId());
+        });
 
-            service.createRequestPost(sendCursoBody).enqueue(new Callback<CursoResponse>() {
-                @Override
-                public void onResponse(Call<CursoResponse> call, Response<CursoResponse> response) {
-                    cursoAtualizado = response.body();
+    }
 
-                    String id = Integer.toString(cursoAtualizado.getId());
-                    etIdCurso.setText(id);
-                    Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+    public void executarRequestGetAll(View view) {
 
-                    tvDescricaoCurso.setText("O curso que foi cadastrado: \n " + cursoAtualizado.toString());
+        requestCurso.createRequestGetAll().enqueue(new Callback<List<CursoResponse>>() {
+            @Override
+            public void onResponse(Call<List<CursoResponse>> call, Response<List<CursoResponse>> response) {
+                Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+
+                List<CursoResponse> cursoLista = response.body();
+
+                for (CursoResponse curso : cursoLista) {
+                    Log.i(">>> Resultado", curso.getId() + " " + curso.getName());
+
+                    listaNomeCursos.add(curso.getName());
                 }
 
-                @Override
-                public void onFailure(Call<CursoResponse> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na request", Toast.LENGTH_LONG).show();
-                }
-            });
+                adapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onFailure(Call<List<CursoResponse>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha", Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+
+    public void executarRequestDelete(View view) {
+        String idDigitado = etIdCurso.getText().toString();
+        int id = Integer.parseInt(idDigitado);
+
+        requestCurso.createRequestDelete(id).enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha", Toast.LENGTH_LONG).show();
+            }
         });
     }
 
-    private void executarRequestPut() {
-        btEditar.setOnClickListener(view -> {
-            String novoNomeDoCurso = etNomeCurso.getText().toString();
-            String idDigitadoPeloUsuario = etIdCurso.getText().toString();
-            int id = Integer.parseInt(idDigitadoPeloUsuario);
+    private void executarRequestPost(CursoPost cursoPost) {
+        requestCurso.createRequestPost(cursoPost).enqueue(new Callback<CursoResponse>() {
+            @Override
+            public void onResponse(Call<CursoResponse> call, Response<CursoResponse> response) {
+                cursoResponse = response.body();
+                Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+            }
 
-            CursoPost cursoPut = new CursoPost();
-            cursoPut.setName(novoNomeDoCurso);
+            @Override
+            public void onFailure(Call<CursoResponse> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha na request", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
+    private void executarRequestPut(CursoPost cursoPut, int id) {
+        requestCurso.createRequestPut(cursoPut, id).enqueue(new Callback<CursoResponse>() {
+            @Override
+            public void onResponse(Call<CursoResponse> call, Response<CursoResponse> response) {
+                Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
+            }
 
-            service.createRequestPut(cursoPut, id).enqueue(new Callback<CursoResponse>() {
-                @Override
-                public void onResponse(Call<CursoResponse> call, Response<CursoResponse> response) {
-                    Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void onFailure(Call<CursoResponse> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Falha na request", Toast.LENGTH_LONG).show();
-                }
-            });
+            @Override
+            public void onFailure(Call<CursoResponse> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Falha na request", Toast.LENGTH_LONG).show();
+            }
         });
     }
 }

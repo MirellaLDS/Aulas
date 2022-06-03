@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Id do curso"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toStartOf="@+id/btEditar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etNomeCurso" />
@@ -43,24 +44,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btCadastrar" />
 
-
     <Button
         android:id="@+id/btDeletar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Apagar"
+        android:layout_marginTop="34dp"
+        android:onClick="executarRequestDelete"
+        android:text="Deletar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btEditar" />
+        app:layout_constraintStart_toEndOf="@+id/btGetAll"
+        app:layout_constraintTop_toBottomOf="@+id/etIdCurso" />
 
-    <TextView
-        android:id="@+id/tvCursoCadastrada"
+    <Button
+        android:id="@+id/btGetAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Curso cadastrado"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="34dp"
+        android:text="Pegar Registros"
+        android:onClick="executarRequestGetAll"
+        app:layout_constraintEnd_toStartOf="@+id/btDeletar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etIdCurso" />
+
+    <ListView
+        android:id="@+id/lvListaCursos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#C9C9C9"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btGetAll" />
 </androidx.constraintlayout.widget.ConstraintLayout>
